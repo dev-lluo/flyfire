@@ -37,6 +37,7 @@
 	
 </body>
 <script type="text/javascript" src="src.common/js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="src.common/js/jquery.ft.base.js"></script>
 <script type="text/javascript" src="src.common/js/jquery.ft.window.js"></script>
 <script type="text/javascript">
 
