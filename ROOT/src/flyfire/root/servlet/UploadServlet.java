@@ -16,7 +16,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
-import flyfire.root.istener.UploadProgressListener;
+import flyfire.root.listener.UploadProgressListener;
 import flyfire.root.util.UUID;
 
 
@@ -65,7 +65,7 @@ public class UploadServlet extends HttpServlet {
 		ServletFileUpload upload = new ServletFileUpload(factory);
 		
 		//setProgressListener
-		upload.setProgressListener(new UploadProgressListener());
+		upload.setProgressListener(new UploadProgressListener(UUID.$.create()));
 		
 		// Parse the request
 		List items = null;
