@@ -123,7 +123,7 @@
 					var $editorarea = $('<div class="text-editor-area iconfont"></div>');
 					$editorarea.css(options.editorareaCss);
 					$editorarea.attr('contenteditable',options.contenteditable);
-					$editorarea.flushRange();
+					
 					$editorarea.appendTo($(dom));
 					var realHeight = $(dom).height();
 					var toolbarHeight = $toolbar.outerHeight(true);
@@ -133,8 +133,6 @@
 					var margH = $editorarea.margHeight(); 
 					editorareaHeight = editorareaHeight - bordH - paddH - margH;
 					$editorarea.css({height:editorareaHeight+'px'});
-					
-					
 					
 					var $iconlist = $('<ul class="iconlist"></ul>');
 					var $iconitem = $('<li class="iconitem"></li>');
@@ -161,27 +159,29 @@
 						_$iconitem.attr(iconItem.name);
 						_$iconitem.appendTo($iconlist);
 					}
-					
-					dom.stinit = true;
-					$(dom).mouseover(function(){
-						$(this).find('div.text-editor-area').change();
+					$editorarea.focus();
+					dom.range = $.flushRange();
+					$editorarea.blur();
+					$editorarea.bind({
+						change : function(){dom.range = $.flushRange();},
+						keyup : function(){dom.range = $.flushRange();},
+						mouseup : function(){dom.range = $.flushRange();},
+						blur : function(){dom.range=$.flushRange();}
 					});
+					dom.stinit = true;
 				}
 			},
 			insert : function(options){
+				$(this).find('.text-editor-area').focus();
+                var selection= window.getSelection ? window.getSelection() : document.selection;
 				 if (!window.getSelection){
-		                $(this).find('.text-editor-area').focus();
-		                var selection= window.getSelection ? window.getSelection() : document.selection;
 		                var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
 		                range.pasteHTML(options);
 		                range.collapse(false);
 		                range.select();
 		            }else{
-		            	$(this).find('.text-editor-area').focus();
-		                var selection= window.getSelection ? window.getSelection() : document.selection;
-		                if(!$.fn.ft.range) $.fn.ft.range = selection.createRange ? selection.createRange() : selection.getRangeAt(0);;
-		                selection.addRange($.fn.ft.range);
-		                var range = $.fn.ft.range;
+		                selection.addRange($(this).get(0).range);
+		                var range = $(this).get(0).range;
 		                range.collapse(false);
 		                var hasR = range.createContextualFragment(options);
 		                var hasR_lastChild = hasR.lastChild;
@@ -197,6 +197,8 @@
 		                }
 		                selection.removeAllRanges();
 		                selection.addRange(range);
+		                console.log(range);
+		                $(this).get(0).range = range;
 		            }
 			}
 		});

@@ -71,22 +71,11 @@
 			$.fn.ft.baseSize.y =$(window).height();
 		});
 	}
-	if(!$.fn.ft.range){
-		$.fn.ft.range = undefined;
-	}
 	if(!$.flushRange){
 		$.flushRange = function(){
 			 var selection= window.getSelection ? window.getSelection() : document.selection;
-	         var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0)
-	         $.fn.ft.range = range;
-		};
-		$.fn.flushRange = function(){
-			$(this).bind({
-                mouseup:$.flushRange,
-                keyup:$.flushRange,
-                change:$.flushRange
-            });
-		};
-		
+	         var range= selection.createRange ? selection.createRange() : selection.getRangeAt(0);
+	         return range;
+		};		
 	}
 })(jQuery);
