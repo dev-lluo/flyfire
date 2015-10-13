@@ -784,6 +784,6 @@ standard deployment descriptor.
   </servlet>
   <servlet-mapping>
     <servlet-name>UploadFileServlet</servlet-name>
-    <url-pattern>/upload</url-pattern>
+    <url-pattern>/upload.do</url-pattern>
   </servlet-mapping>
 </web-app>

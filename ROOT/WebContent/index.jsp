@@ -22,7 +22,7 @@
 		<ul id="menu">
 			<li class="iconfont"><label class="i">&#xf00de;</label><label class="t"><a target="_blank" href="iconfont/demo.html">图标库</a></label></li>
 			<li class="iconfont"><label class="i">&#xf00fc;</label><label class="t">资源库</label></li>
-			<li class="iconfont"><label class="i">&#xf0020;</label><label class="t">上传</label></li>
+			<li class="iconfont" id="uploadBtn"><label class="i">&#xf0020;</label><label class="t">上传</label></li>
 		</ul>
 	</div>
 	<div id="page_bottom">
@@ -33,7 +33,6 @@
 		<div><%=request.getSession().getServletContext().getRealPath("/upload/store/") %></div>
 	</div>
 	<div id="uploadWin"></div>
-	<div id="uploadWin2"></div>
 	
 </body>
 <script type="text/javascript" src="src.common/js/jquery-2.1.4.min.js"></script>
@@ -43,6 +42,11 @@
 
 
 	$(function(){
+		
+		$('#uploadBtn').click(function(){
+			$("#uploadWin").ftWindow({title:'文件上传',css:{width:'350px',height:'100px'},dataMode:'server',url:'upload/uploadView.jsp'});
+		});
+		
 		/*
 		 *天气数据查询
 		 */
@@ -64,9 +68,6 @@
 				},'json');
 			});
 		},'json');
-		
-		$("#uploadWin").ftWindow({title:'文件上传',css:{width:'450px',height:'300px'},dataMode:'server',url:'upload/upload.jsp'});
-
 		
 	});
 </script>

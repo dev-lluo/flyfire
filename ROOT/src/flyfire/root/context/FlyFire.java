@@ -7,35 +7,18 @@ public class FlyFire {
 	public static final FlyFire $ = new FlyFire();
 	private FlyFire(){}
 	private Map<String,Progress> uploadProgress = new HashMap<String,Progress>();
-	public class Progress {
-		private long pBytesRead;
-		private long pContentLength;
-		private int pItems;
-		public long getpBytesRead() {
-			return pBytesRead;
-		}
-		public void setpBytesRead(long pBytesRead) {
-			this.pBytesRead = pBytesRead;
-		}
-		public long getpContentLength() {
-			return pContentLength;
-		}
-		public void setpContentLength(long pContentLength) {
-			this.pContentLength = pContentLength;
-		}
-		public int getpItems() {
-			return pItems;
-		}
-		public void setpItems(int pItems) {
-			this.pItems = pItems;
-		}
-		
-	}
 	public Progress getUploadProgress(String id) {
 		if(FlyFire.$.uploadProgress.containsKey(id)){
-			return FlyFire.$.uploadProgress.get(id);
+			Progress progress = FlyFire.$.uploadProgress.get(id);
+			if(progress.isEnd()){
+				FlyFire.$.uploadProgress.remove(id);
+			}
+			return progress;
 		}else{
-			return new Progress();
+			Progress progress = new Progress();
+			progress.setEnd(true);
+			progress.setMsg("接口ID不存在");
+			return progress;
 		}
 	}
 	public void setUploadProgress(String id,long pBytesRead, long pContentLength, int pItems) {
@@ -49,5 +32,11 @@ public class FlyFire {
 		temp.setpBytesRead(pBytesRead);
 		temp.setpContentLength(pContentLength);
 		temp.setpItems(pItems);
+		if(pBytesRead==pContentLength){
+			temp.setEnd(true);
+			temp.setMsg("上传成功！！！");
+		}else{
+			temp.setMsg("正在上传。。。");
+		}
 	}
 }

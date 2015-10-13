@@ -107,3 +107,8 @@ a:VISITED{
 	border:none;
 	background-color: transparent;
 }
+
+iframe{
+	width:100%;
+	height:35px;
+}
