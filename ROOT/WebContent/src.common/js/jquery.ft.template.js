@@ -1,6 +1,6 @@
 ;(function($){
-	if(!$.ft.ftTemplate){
-		$.ft.ftTemplate = function(options){
+	if(!$.fn.ftTemplate){
+		$.fn.ftTemplate = function(options){
 			options = options?options:{};
 			methods = $.extend({},$.fn.ftTemplate.methods);
 			if(methods[options]){

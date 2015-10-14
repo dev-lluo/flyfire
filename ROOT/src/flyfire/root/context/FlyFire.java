@@ -10,14 +10,15 @@ public class FlyFire {
 	public Progress getUploadProgress(String id) {
 		if(FlyFire.$.uploadProgress.containsKey(id)){
 			Progress progress = FlyFire.$.uploadProgress.get(id);
-			if(progress.isEnd()){
+			if(progress.illegal()){
+				System.out.println("remove["+id+"]");
 				FlyFire.$.uploadProgress.remove(id);
 			}
 			return progress;
 		}else{
 			Progress progress = new Progress();
-			progress.setEnd(true);
-			progress.setMsg("接口ID不存在");
+			progress.setMsg("请稍候。。。");
+			FlyFire.$.uploadProgress.put(id, progress);
 			return progress;
 		}
 	}
@@ -25,8 +26,10 @@ public class FlyFire {
 		Progress temp = null;
 		if(FlyFire.$.uploadProgress.containsKey(id)){
 			temp = FlyFire.$.uploadProgress.get(id);
+			temp.flushFlag();
 		}else{
 			temp = new Progress();
+			temp.setMsg("请稍候。。。");
 			FlyFire.$.uploadProgress.put(id, temp);
 		}
 		temp.setpBytesRead(pBytesRead);

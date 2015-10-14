@@ -8,23 +8,26 @@
 </head>
 <body>
 	<div style="width:98%;height:auto;padding:1%;text-align: center;">
-		<iframe src="upload/upload.jsp" id="iframeForUpload"></iframe>
-		<input type="range" id="progress" value="0" style="display: none;" />
+		<iframe src="upload/upload.jsp" id="iframeForUpload"  ></iframe>
+		<div style="width:80%;height:30px;" id="progress" style="display: none;"></div>
 	</div>
 	<script type="text/javascript">
-		window.progress = function(options){
-			$('#iframeForUpload').css('display','none');
-			$("#progress").css('display','inline-block');
-			setTimeout(function(){flushProgress(options);},1000);
-		}
-		function flushProgress(options){
-			$.post('upload.do?type=progress',{'timestamp':options},function(data){
-				$("#progress").val((data.pBytesRead/data.pContentLength)*100);
-				if(!data.end){
-					setTimeout(function(){flushProgress(options);}, 1000);
-				}
-			},'json');
-		}
+		$(function(){
+			window.progress = function(options){
+				$('#iframeForUpload').css('display','none');
+				$('#progress').ftProgress();
+				flushProgress(options);
+			}
+			function flushProgress(options){
+				$.post('upload.do?type=progress',{'timestamp':options},function(data){
+					$('#progress').ftProgress('value',(Math.floor(data.pBytesRead/data.pContentLength*10000)/100));
+					if(!data.end){
+						setTimeout(function(){flushProgress(options);}, 1000);
+					}
+				},'json');
+			}
+		});
+		
 	</script>
 </body>
 </html>

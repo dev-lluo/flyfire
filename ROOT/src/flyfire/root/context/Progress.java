@@ -6,6 +6,15 @@ public class Progress {
 	private int pItems;
 	private boolean end;
 	private String msg;
+	private long flag;
+	
+	public Progress() {
+		super();
+		// TODO Auto-generated constructor stub
+		this.pBytesRead = 0;
+		this.pContentLength = Long.MAX_VALUE;
+		this.flag = System.currentTimeMillis();
+	}
 	public long getpBytesRead() {
 		return pBytesRead;
 	}
@@ -35,6 +44,15 @@ public class Progress {
 	}
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+	
+	public boolean illegal(){
+		if(this.end||System.currentTimeMillis()-this.flag>10*1000)return true;
+		else return false;
+	}
+	
+	protected void flushFlag() {
+		this.flag = System.currentTimeMillis();
 	}
 	
 }
