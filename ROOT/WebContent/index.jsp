@@ -47,7 +47,7 @@
 		$('#uploadBtn').click(function(){
 			$("#uploadWin").ftWindow({title:'文件上传',css:{width:'350px',height:'100px'},dataMode:'server',url:'upload/uploadView.jsp'});
 		});
-		$('#uploadBtn').click();
+		//$('#uploadBtn').click();
 		/*
 		 *天气数据查询
 		 */

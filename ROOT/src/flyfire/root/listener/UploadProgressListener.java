@@ -19,7 +19,7 @@ public class UploadProgressListener implements ProgressListener {
 	public void update(long pBytesRead, long pContentLength, int pItems) {
 		// TODO Auto-generated method stub
 		FlyFire.$.setUploadProgress(progressId, pBytesRead, pContentLength, pItems);
-		System.out.println("["+progressId +"]现在已经处理了" + pBytesRead
+		FlyFire.$.print("["+progressId +"]现在已经处理了" + pBytesRead
 				+ "数据，总数据量" + pContentLength
 				+ "正在处理" + pItems);
 

@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 @SuppressWarnings("all")
-public class JSONUtil {
-	public static String getJSONSTR(Object obj){
+public class JsonC {
+	public static String convert(Object obj){
 			if(obj==null){
 				return "null";
 			}
@@ -70,7 +70,7 @@ public class JSONUtil {
 			sb.append(field.getName());
 			sb.append("\"");
 			sb.append(":");
-			sb.append(getJSONSTR(field.get(obj)));
+			sb.append(JsonC.convert(field.get(obj)));
 			sb.append(",");
 		}
 		sb.replace(sb.length()-1, sb.length(), "}");
@@ -80,7 +80,7 @@ public class JSONUtil {
 		StringBuffer sb = new StringBuffer("[");
 		Object[] objs = (Object[])obj;
 		for(Object o : objs){
-			sb.append(JSONUtil.getJSONSTR(o)+" ,");
+			sb.append(JsonC.convert(o)+" ,");
 		}
 		sb.replace(sb.length()-1, sb.length(), "]");
 		return sb.toString();
@@ -92,7 +92,7 @@ public class JSONUtil {
 		for(Map.Entry entry : entrySet){
 			sb.append(entry.getKey());
 			sb.append(":");
-			sb.append(getJSONSTR(entry.getValue()));
+			sb.append(JsonC.convert(entry.getValue()));
 			sb.append(",");
 		}
 		sb.replace(sb.length()-1, sb.length(), "}");
@@ -102,7 +102,7 @@ public class JSONUtil {
 		StringBuffer sb = new StringBuffer("[");
 		List objs = (List)obj;
 		for(Object o : objs){
-			sb.append(JSONUtil.getJSONSTR(o)+" ,");
+			sb.append(JsonC.convert(o)+" ,");
 		}
 		sb.replace(sb.length()-1, sb.length(), "]");
 		return sb.toString();

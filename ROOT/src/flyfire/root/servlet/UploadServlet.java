@@ -20,7 +20,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import flyfire.root.context.FlyFire;
 import flyfire.root.context.Progress;
 import flyfire.root.listener.UploadProgressListener;
-import flyfire.root.util.JSONUtil;
+import flyfire.root.util.JsonC;
 import flyfire.root.util.UUID;
 
 
@@ -68,7 +68,7 @@ public class UploadServlet extends HttpServlet {
 	
 	protected void progress(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Progress progress = FlyFire.$.getUploadProgress(request.getSession().getId());
-		String json = JSONUtil.getJSONSTR(progress);
+		String json = JsonC.convert(progress);
 		response.setCharacterEncoding("UTF-8"); 
 		response.setContentType("application/json; charset=utf-8");  
 		PrintWriter out = response.getWriter();
@@ -116,17 +116,17 @@ public class UploadServlet extends HttpServlet {
 					if (item.isFormField()) {
 						String name = item.getFieldName();
 						String value = item.getString();
-						System.out.println(name + ":" + value);
+						FlyFire.$.print(name + ":" + value);
 					} else {
 						String fieldName = item.getFieldName();
 						String fileName = item.getName();
 						String contentType = item.getContentType();
 						boolean isInMem = item.isInMemory();
 						long sizeInBytes = item.getSize();
-						System.out.println(fieldName + ":" + fileName);
-						System.out.println("类型：" + contentType);
-						System.out.println("是否在内在：" + isInMem);
-						System.out.println("文件大小:" + sizeInBytes);
+						FlyFire.$.print(fieldName + ":" + fileName);
+						FlyFire.$.print("类型：" + contentType);
+						FlyFire.$.print("是否在内在：" + isInMem);
+						FlyFire.$.print("文件大小:" + sizeInBytes);
 						String sPName =fileName.substring(fileName.lastIndexOf('.'));
 						File uploadedFile = new File( UploadServlet.storeDir+ UUID.$.create()+sPName);
 						try {

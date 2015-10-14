@@ -3,15 +3,18 @@ package flyfire.root.context;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class FlyFire {
 	public static final FlyFire $ = new FlyFire();
 	private FlyFire(){}
+	
+	/*上传进度*/
 	private Map<String,Progress> uploadProgress = new HashMap<String,Progress>();
 	public Progress getUploadProgress(String id) {
 		if(FlyFire.$.uploadProgress.containsKey(id)){
 			Progress progress = FlyFire.$.uploadProgress.get(id);
 			if(progress.illegal()){
-				System.out.println("remove["+id+"]");
+				FlyFire.$.print("remove["+id+"]");
 				FlyFire.$.uploadProgress.remove(id);
 			}
 			return progress;
@@ -42,4 +45,20 @@ public class FlyFire {
 			temp.setMsg("正在上传。。。");
 		}
 	}
+	
+	/*输出*/
+	private static Print out = new JdkPrint();
+	
+	public void setPrint(Print print){
+		FlyFire.out = print;
+	}
+	
+	public void print(Object obj){
+		FlyFire.out.print(obj);
+	}
+	
+	public void print(Object obj,int level){
+		FlyFire.out.print(obj, level);
+	}
+	
 }
