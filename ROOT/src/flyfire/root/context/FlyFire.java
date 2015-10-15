@@ -1,7 +1,11 @@
 package flyfire.root.context;
 
+import java.beans.PropertyEditorManager;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import flyfire.root.filter.StorePrepareAndExecFilter.PropertyM;
 
 
 public class FlyFire {
@@ -45,6 +49,18 @@ public class FlyFire {
 			temp.setMsg("正在上传。。。");
 		}
 	}
+	
+	/*数据仓库*/
+	private final Map<Class<? extends Store>,List<PropertyM>> storeMap = new HashMap<Class<? extends Store>,List<PropertyM>>(); 
+	
+	public void setStoreMap(Class<? extends Store> clzz,List<PropertyM> pmL){
+		FlyFire.$.storeMap.put(clzz, pmL);
+	}
+	
+	public List<PropertyM> getStoreMap(Class<? extends Store> clzz){
+		return FlyFire.$.storeMap.get(clzz);
+	}
+	
 	
 	/*输出*/
 	private static Print out = new JdkPrint();
