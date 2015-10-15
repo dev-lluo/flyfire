@@ -9,35 +9,42 @@ import java.util.Set;
 
 @SuppressWarnings("all")
 public class JsonC {
+	
+	private static final int defaultDeep = 3;
+	
 	public static String convert(Object obj){
-			if(obj==null){
-				return "null";
-			}
-			
-			Class<?> type = obj.getClass();
-			if(isVType(type)){
-				return VJSON(obj);
-			}else if(isRBaseType(type)){
-				return RBseJSON(obj);
-			}else if(obj.getClass().isArray()){
-				return ArrayJSON(obj);
-			}else if(obj instanceof java.util.Collection){
-				return ListJSON(obj);
-			}else if(obj instanceof java.util.Map){
-				return MapJSON(obj);
-			}else{
-				try {
-					return ObjectJSON(obj);
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					throw new RuntimeException(e);
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					throw new RuntimeException(e);
-				}
-			}
-
+			return convert(obj,0);
+	}
+	
+	private static String convert(Object obj,int deep){
+		if(obj==null){
+			return "null";
+		}else if(deep>defaultDeep){
+			return "{\"$\":\"deep excess...\"}";
+		}
 		
+		Class<?> type = obj.getClass();
+		if(isVType(type)){
+			return VJSON(obj,deep);
+		}else if(isRBaseType(type)){
+			return RBseJSON(obj,deep);
+		}else if(obj.getClass().isArray()){
+			return ArrayJSON(obj,deep);
+		}else if(obj instanceof java.util.Collection){
+			return ListJSON(obj,deep);
+		}else if(obj instanceof java.util.Map){
+			return MapJSON(obj,deep);
+		}else{
+			try {
+				return ObjectJSON(obj,deep);
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			}
+		}
 	}
 	
 	private static boolean isVType(Class<?> type){
@@ -51,15 +58,18 @@ public class JsonC {
 		|String.class.isAssignableFrom(type);
 	}
 	
-	private static String VJSON(Object obj){
+	private static String VJSON(Object obj,int deep){
+		deep++;
 		return obj.toString();
 	}
 	
-	private static String RBseJSON(Object obj){
+	private static String RBseJSON(Object obj,int deep){
+		deep++;
 		return "\""+obj.toString()+"\"";
 	}
 	
-	private static String ObjectJSON(Object obj) throws IllegalArgumentException, IllegalAccessException {
+	private static String ObjectJSON(Object obj,int deep) throws IllegalArgumentException, IllegalAccessException {
+		deep++;
 		Class<?> clss =obj.getClass();
 		StringBuffer sb = new StringBuffer("{ ");
 		Field[] fieldArr = clss.getDeclaredFields();
@@ -70,39 +80,42 @@ public class JsonC {
 			sb.append(field.getName());
 			sb.append("\"");
 			sb.append(":");
-			sb.append(JsonC.convert(field.get(obj)));
+			sb.append(JsonC.convert(field.get(obj),deep));
 			sb.append(",");
 		}
 		sb.replace(sb.length()-1, sb.length(), "}");
 		return sb.toString();
 	}
-	private static String ArrayJSON(Object obj){
-		StringBuffer sb = new StringBuffer("[");
+	private static String ArrayJSON(Object obj,int deep){
+		deep++;
+		StringBuffer sb = new StringBuffer("[ ");
 		Object[] objs = (Object[])obj;
 		for(Object o : objs){
-			sb.append(JsonC.convert(o)+" ,");
+			sb.append(JsonC.convert(o,deep)+" ,");
 		}
 		sb.replace(sb.length()-1, sb.length(), "]");
 		return sb.toString();
 	}
-	private static String MapJSON(Object obj){
-		StringBuffer sb = new StringBuffer("{");
+	private static String MapJSON(Object obj,int deep){
+		deep++;
+		StringBuffer sb = new StringBuffer("{ ");
 		Map objs = (Map)obj;
 		Set<Entry> entrySet = objs.entrySet();
 		for(Map.Entry entry : entrySet){
 			sb.append(entry.getKey());
 			sb.append(":");
-			sb.append(JsonC.convert(entry.getValue()));
+			sb.append(JsonC.convert(entry.getValue(),deep));
 			sb.append(",");
 		}
 		sb.replace(sb.length()-1, sb.length(), "}");
 		return sb.toString();
 	}
-	private static String ListJSON(Object obj){
-		StringBuffer sb = new StringBuffer("[");
+	private static String ListJSON(Object obj,int deep){
+		deep++;
+		StringBuffer sb = new StringBuffer("[ ");
 		List objs = (List)obj;
 		for(Object o : objs){
-			sb.append(JsonC.convert(o)+" ,");
+			sb.append(JsonC.convert(o,deep)+" ,");
 		}
 		sb.replace(sb.length()-1, sb.length(), "]");
 		return sb.toString();

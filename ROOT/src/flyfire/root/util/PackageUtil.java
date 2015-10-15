@@ -11,35 +11,35 @@ import java.util.jar.JarFile;
 /**
  * 
  * @author Orange
- * package������
+ * package工具类
  *
  */
 @SuppressWarnings("all")
 public final class PackageUtil {
 	/**
-	 * ��ֹ���ʵ���Լ�����
+	 * 禁止外界实例化以及反射
 	 */
 	private PackageUtil(){
 		throw new Error();
 	}
 	
-	//ע����ʶ
+	//注入包标识
     private static String idtt;
 	
     /** 
-     * ��ȡĳ���£������ð�������Ӱ������� 
-     * @param packageName ���� 
-     * @return һ������������ 
+     * 获取某包下（包括该包的所有子包）所有类 
+     * @param packageName 包名 
+     * @return 一组类的完整名称 
      */ 
     public static List<String> getClassName(String packageName) {  
         return getClassName(packageName, true);  
     }  
     
     /** 
-     * ��ȡĳ���������� 
-     * @param packageName ���� 
-     * @param childPackage �Ƿ�����Ӱ� 
-     * @return һ������������ 
+     * 获取某包下所有类 
+     * @param packageName 包名 
+     * @param childPackage 是否遍历子包 
+     * @return 一组类的完整名称 
      */  
     public static List<String> getClassName(String packageName, boolean childPackage) {  
         List<String> fileNames = null;  
@@ -64,10 +64,10 @@ public final class PackageUtil {
     
     
 	 /** 
-     * ����Ŀ�ļ���ȡĳ���������� 
-     * @param filePath �ļ�·�� 
-     * @param childPackage �Ƿ�����Ӱ� 
-     * @return һ������������ 
+     * 从项目文件获取某包下所有类 
+     * @param filePath 文件路径 
+     * @param childPackage 是否遍历子包 
+     * @return 一组类的完整名称 
      */  
     private static List<String> getClassNameByFile(String filePath,  boolean childPackage) {  
         List<String> myClassName = new ArrayList<String>();  
@@ -92,10 +92,10 @@ public final class PackageUtil {
     }  
     
     /** 
-     * ��jar��ȡĳ���������� 
-     * @param jarPath jar�ļ�·�� 
-     * @param childPackage �Ƿ�����Ӱ� 
-     * @return һ������������ 
+     * 从jar获取某包下所有类 
+     * @param jarPath jar文件路径 
+     * @param childPackage 是否遍历子包 
+     * @return 一组类的完整名称 
      */  
     private static List<String> getClassNameByJar(String jarPath, boolean childPackage) {  
         List<String> myClassName = new ArrayList<String>();  
@@ -130,7 +130,7 @@ public final class PackageUtil {
                 }  
             }  
         } catch (Exception e) {  
-            e.printStackTrace();  
+           throw new RuntimeException(e);
         }  
         return myClassName;  
     }  

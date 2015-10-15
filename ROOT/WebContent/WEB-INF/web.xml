@@ -775,6 +775,27 @@ standard deployment descriptor.
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <display-name>扑火流萤</display-name>
   <description>扑火流萤</description>
+  <context-param>  
+        <param-name>exec.pckg</param-name>  
+        <param-value>flyfire.root.exec</param-value>  
+  </context-param>
+  <listener>
+  	<listener-class>flyfire.root.listener.SystemInitialListener</listener-class>
+  </listener>
+  
+	<filter>
+    	<filter-name>storeFilter</filter-name>
+    	<filter-class>flyfire.root.filter.StorePrepareAndExecFilter</filter-class>
+    	<init-param>    
+            <param-name>store.pckg</param-name>    
+            <param-value>flyfire.root.store</param-value>    
+        </init-param> 
+	</filter>
+	<filter-mapping>
+    	<filter-name>storeFilter</filter-name>
+   		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
