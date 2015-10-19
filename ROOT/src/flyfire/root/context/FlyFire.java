@@ -1,11 +1,10 @@
 package flyfire.root.context;
 
-import java.beans.PropertyEditorManager;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import flyfire.root.filter.StorePrepareAndExecFilter.PropertyM;
+import flyfire.root.listener.SystemInitialListener.ExecCtrl;
 
 
 public class FlyFire {
@@ -51,14 +50,25 @@ public class FlyFire {
 	}
 	
 	/*数据仓库*/
-	private final Map<Class<? extends Store>,List<PropertyM>> storeMap = new HashMap<Class<? extends Store>,List<PropertyM>>(); 
+	private final Map<Class<? extends Store>,Map<String,PropertyM>> storeMap = new HashMap<Class<? extends Store>,Map<String,PropertyM>>(); 
 	
-	public void setStoreMap(Class<? extends Store> clzz,List<PropertyM> pmL){
+	public void setStoreMap(Class<? extends Store> clzz,Map<String,PropertyM> pmL){
 		FlyFire.$.storeMap.put(clzz, pmL);
 	}
 	
-	public List<PropertyM> getStoreMap(Class<? extends Store> clzz){
+	public Map<String,PropertyM> getStoreMap(Class<? extends Store> clzz){
 		return FlyFire.$.storeMap.get(clzz);
+	}
+	
+	/*控制转发*/
+	private final Map<String,ExecCtrl> execStore = new HashMap<String,ExecCtrl>();
+	
+	public void setExecStore(String path,ExecCtrl ctrl){
+		FlyFire.$.execStore.put(path, ctrl);
+	}
+	
+	public ExecCtrl getExecStore(String path){
+		return FlyFire.$.execStore.get(path);
 	}
 	
 	
