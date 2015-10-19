@@ -17,9 +17,16 @@ public class AccessStore extends Store {
 		this.name = name;
 	}
 	
+	public String getName(){
+		return this.name;
+	}
+	
 	private String pwd;
 	public void setPwd(String pwd){
 		this.pwd = pwd;
+	}
+	public String getPwd(){
+		return this.pwd;
 	}
 
 }

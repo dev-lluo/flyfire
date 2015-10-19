@@ -1,15 +1,15 @@
 package flyfire.root.filter;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,9 +17,13 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import flyfire.root.context.FlyFire;
 import flyfire.root.context.Store;
+import flyfire.root.listener.SystemInitialListener.ExecCtrl;
+import flyfire.root.util.JsonC;
 import flyfire.root.util.PackageUtil;
 
 public class StorePrepareAndExecFilter implements Filter {
@@ -30,11 +34,60 @@ public class StorePrepareAndExecFilter implements Filter {
 		
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain arg2)
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		
+		try{
+			HttpServletRequest htRequest = (HttpServletRequest) request;
+			FlyFire.$.print(htRequest.getRequestURI());
+			ExecCtrl ctrl = FlyFire.$.getExecStore(htRequest.getRequestURI());
+			if(ctrl!=null){
+				Class<?>[] clzzArr = ctrl.clzzArr();
+				if(clzzArr!=null&&clzzArr.length>0){
+					if (Store.class.isAssignableFrom(clzzArr[0])) {
+						Map<String, PropertyM> pm = FlyFire.$.getStoreMap((Class<? extends Store>) clzzArr[0]);
+						Object obj = clzzArr[0].getConstructor(new Class<?>[]{HttpServletRequest.class,HttpServletResponse.class}).newInstance(request,response);
+						if(pm!=null){
+							Set<Entry<String, PropertyM>> set = pm.entrySet();
+							for(Iterator<Entry<String, PropertyM>> i = set.iterator();i.hasNext();){
+								Entry<String, PropertyM> entry = i.next();
+								entry.getValue().setter(obj, htRequest.getParameter(entry.getKey()));
+							}
+						}
+						if(ctrl.isPost()&&!"POST".equals(htRequest.getMethod())){
+							Map map = new HashMap<>();
+							map.put("msg", "request method is get;but need post...");
+							response.getWriter().write(JsonC.convert(map));
+						}else{
+							ctrl.exec(obj);
+						}
+						
+					}else{
+						if(ctrl.isPost()&&!"POST".equals(htRequest.getMethod())){
+							Map map = new HashMap<>();
+							map.put("msg", "request method is get;but need post...");
+							response.getWriter().write(JsonC.convert(map));
+						}else{
+							ctrl.exec();
+						}
+					}
+				}else{
+					if(ctrl.isPost()&&!"POST".equals(htRequest.getMethod())){
+						Map map = new HashMap<>();
+						map.put("msg", "request method is get;but need post...");
+						response.getWriter().write(JsonC.convert(map));
+					}else{
+						ctrl.exec();
+					}
+				}
+			}else{
+				chain.doFilter(request, response);
+			}
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,14 +102,15 @@ public class StorePrepareAndExecFilter implements Filter {
 					Class<? extends Store> clzz = (Class<? extends Store>) Class.forName(i.next());
 					if(Store.class.isAssignableFrom(clzz)){
 						Method[] methods = clzz.getMethods();
-						List<PropertyM> prList = new ArrayList<PropertyM>();
+						Map<String,PropertyM> prMap = new HashMap<String,PropertyM>();
 						for(int j = 0;j<methods.length;j++){
 							String methodName = methods[j].getName();
 							if(methodName.indexOf("set")==0){
-								prList.add(new PropertyM(methodName.substring(methodName.indexOf("set")+3).toLowerCase(),methods[j]));
+								String mName =  methodName.substring(methodName.indexOf("set")+3).toLowerCase();
+								prMap.put(mName,new PropertyM(mName,methods[j]));
 							}
 						}
-						FlyFire.$.setStoreMap(clzz, prList);
+						FlyFire.$.setStoreMap(clzz, prMap);
 					}
 				}
 			}else{
