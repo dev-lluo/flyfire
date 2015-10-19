@@ -27,6 +27,9 @@ public final class EntityResolver {
 	protected static Map<Class<?>,TblPic> store = new HashMap<Class<?>,TblPic>();
 	@SuppressWarnings("rawtypes")
 	public static TblPic resolve(Class<?> clzz) {
+		if(EntityResolver.store.containsKey(clzz)){
+			return EntityResolver.store.get(clzz);
+		}
 		Table table = clzz.getAnnotation(Table.class);
 		if(table!=null){
 			Field[] filedArr = clzz.getDeclaredFields();
