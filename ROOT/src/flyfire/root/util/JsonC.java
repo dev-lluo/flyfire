@@ -1,6 +1,7 @@
 package flyfire.root.util;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,20 @@ public class JsonC {
 			sb.append(JsonC.convert(field.get(obj),deep));
 			sb.append(",");
 		}
+		while(clss.getSuperclass()!=Object.class&&clss!=Object.class){
+			clss = clss.getSuperclass();
+			fieldArr = clss.getDeclaredFields();
+			for(int i = 0;i<fieldArr.length;i++){
+				Field field = fieldArr[i];
+				field.setAccessible(true);
+				sb.append("\"");
+				sb.append(field.getName());
+				sb.append("\"");
+				sb.append(":");
+				sb.append(JsonC.convert(field.get(obj),deep));
+				sb.append(",");
+			}
+		}
 		sb.replace(sb.length()-1, sb.length(), "}");
 		return sb.toString();
 	}
@@ -102,7 +117,9 @@ public class JsonC {
 		Map objs = (Map)obj;
 		Set<Entry> entrySet = objs.entrySet();
 		for(Map.Entry entry : entrySet){
+			sb.append("\"");
 			sb.append(entry.getKey());
+			sb.append("\"");
 			sb.append(":");
 			sb.append(JsonC.convert(entry.getValue(),deep));
 			sb.append(",");
@@ -113,7 +130,7 @@ public class JsonC {
 	private static String ListJSON(Object obj,int deep){
 		deep++;
 		StringBuffer sb = new StringBuffer("[ ");
-		List objs = (List)obj;
+		Collection objs = (Collection)obj;
 		for(Object o : objs){
 			sb.append(JsonC.convert(o,deep)+" ,");
 		}

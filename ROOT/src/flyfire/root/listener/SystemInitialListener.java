@@ -10,6 +10,7 @@ import javax.servlet.ServletContextListener;
 
 import flyfire.root.context.Exec;
 import flyfire.root.context.FlyFire;
+import flyfire.root.sql.resolver.EntityResolver;
 import flyfire.root.util.PackageUtil;
 
 public class SystemInitialListener implements ServletContextListener {
@@ -23,14 +24,42 @@ public class SystemInitialListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		// TODO Auto-generated method stub
+		
+		String entityPckg = event.getServletContext().getInitParameter("entity.pckg");
+		if(entityPckg!=null){
+			initEntity(PackageUtil.getClassName(entityPckg));
+		}else{
+			throw new RuntimeException("entity.pckg is null...");
+		}
+		
 		String execPckg = event.getServletContext().getInitParameter("exec.pckg");
 		if(execPckg!=null){
 			initExec(PackageUtil.getClassName(execPckg));
 		}else{
 			throw new RuntimeException("exec.pckg is null...");
 		}
+		
 	}
 	
+	/**
+	 * 初始化实体类
+	 * @param pckgPath
+	 */
+	private void initEntity(List<String> pckgPath){
+		try{
+			for(Iterator<String> i = pckgPath.iterator();i.hasNext();){
+				Class<?> clzz = Class.forName(i.next());
+				EntityResolver.resolve(clzz);
+				i.remove();
+			}
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
+	}
+	/**
+	 * 初始化执行程序
+	 * @param pckgPath
+	 */
 	private void initExec(List<String> pckgPath){
 		try{
 			for(Iterator<String> i = pckgPath.iterator();i.hasNext();){
@@ -38,6 +67,7 @@ public class SystemInitialListener implements ServletContextListener {
 				Exec exec = clzz.getAnnotation(Exec.class);
 				if(exec!=null){
 					String bPath = "/"+exec.url();
+					Object obj = clzz.getConstructor().newInstance();
 					Method[] methods = clzz.getMethods();
 					for(int j = 0;j<methods.length;j++){
 						Method method = methods[j];
@@ -46,13 +76,14 @@ public class SystemInitialListener implements ServletContextListener {
 							String cPath = bPath+"/"+execM.url();
 							Class<?>[] clzzArr = method.getParameterTypes();
 							if(exec.isPost()||execM.isPost()){
-								FlyFire.$.setExecStore(cPath,new ExecCtrl(clzz.newInstance(), method,true ,clzzArr));
+								FlyFire.$.setExecStore(cPath,new ExecCtrl(obj, method,true ,clzzArr));
 							}else{
-								FlyFire.$.setExecStore(cPath,new ExecCtrl(clzz.newInstance(), method,false ,clzzArr));
+								FlyFire.$.setExecStore(cPath,new ExecCtrl(obj, method,false ,clzzArr));
 							}
 						}
 					}
 				}
+				i.remove();
 			}
 		}catch(Exception e){
 			throw new RuntimeException(e);

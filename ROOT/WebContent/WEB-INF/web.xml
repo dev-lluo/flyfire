@@ -779,6 +779,10 @@ standard deployment descriptor.
         <param-name>exec.pckg</param-name>  
         <param-value>flyfire.root.exec</param-value>  
   </context-param>
+  <context-param>  
+        <param-name>entity.pckg</param-name>  
+        <param-value>flyfire.root.entity</param-value>  
+  </context-param>
   <listener>
   	<listener-class>flyfire.root.listener.SystemInitialListener</listener-class>
   </listener>

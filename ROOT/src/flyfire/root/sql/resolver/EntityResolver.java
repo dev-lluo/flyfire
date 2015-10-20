@@ -25,6 +25,9 @@ import flyfire.root.sql.picture.TblPic;
 
 public final class EntityResolver {
 	protected static Map<Class<?>,TblPic> store = new HashMap<Class<?>,TblPic>();
+	public static Map<Class<?>,TblPic> getStore(){
+		return EntityResolver.store;
+	}
 	@SuppressWarnings("rawtypes")
 	public static TblPic resolve(Class<?> clzz) {
 		if(EntityResolver.store.containsKey(clzz)){

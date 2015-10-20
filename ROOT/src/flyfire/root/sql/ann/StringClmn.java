@@ -16,7 +16,7 @@ public @interface StringClmn {
 	boolean isNl() default true;
 	boolean isUn() default false;
 	int minVal() default 0;
-	int maxVal() default 2000;
+	int maxVal() default 500;
 	String defVal() default "";
 	String format() default "";
 }
