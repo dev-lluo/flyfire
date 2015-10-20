@@ -8,6 +8,7 @@ import java.util.Set;
 
 import flyfire.root.context.Exec;
 import flyfire.root.context.Store;
+import flyfire.root.entity.UploadLog;
 import flyfire.root.sql.picture.TblPic;
 import flyfire.root.sql.resolver.EntityResolver;
 import flyfire.root.sql.resolver.MySqlResolver;
@@ -32,6 +33,17 @@ public class EntityExec {
 	@Exec(url="table.create")
 	public void tableCreate(EntityStore store){
 		Result result = MySqlResolver.$.forCreate(store.getClzz());
+		store.append(result.getSql());
+		store.responseText();
+	}
+	
+	@Exec(url="table.update")
+	public void tableUpdate(EntityStore store){
+		UploadLog log = new UploadLog();
+		log.setIpAddr("127.0.0.1");
+		log.setTargetPath("adfasdfadsf");
+		log.setTimestamp(System.currentTimeMillis());
+		Result result = MySqlResolver.$.forUpdate(log);
 		store.append(result.getSql());
 		store.responseText();
 	}

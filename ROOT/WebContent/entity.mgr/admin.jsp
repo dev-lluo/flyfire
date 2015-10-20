@@ -80,6 +80,12 @@
 			},'text');
 		});
 		
+		$("#upd_table").click(function(){
+			$.get("../entity.mgr/table.update",{clzz:$('#entity_select').val()},function(data){
+				$('#result').val(data);
+			},'text');
+		});
+		
 		$.get("../entity.mgr/tables",{},function(data){
 			var $s = $("#entity_select");
 			for(var a in data){

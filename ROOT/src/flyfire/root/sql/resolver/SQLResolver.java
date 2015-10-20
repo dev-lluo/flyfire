@@ -29,7 +29,34 @@ public abstract class SQLResolver {
 		}
 	}
 	
+	public class SQLCondition{
+		private String fieldName;
+		private String operator;
+		private Object value;
+		public String getFieldName() {
+			return fieldName;
+		}
+		public void setFieldName(String fieldName) {
+			this.fieldName = fieldName;
+		}
+		public String getOperator() {
+			return operator;
+		}
+		public void setOperator(String operator) {
+			this.operator = operator;
+		}
+		public Object getValue() {
+			return value;
+		}
+		public void setValue(Object value) {
+			this.value = value;
+		}
+	}
+	
 	public abstract Result forCreate(Class<?> clzz);
+	
+	
+	public abstract Result forUpdate(Object obj,SQLCondition...conditions);
 	
 	
 	@SuppressWarnings("rawtypes")
@@ -39,6 +66,7 @@ public abstract class SQLResolver {
 		for(Iterator<ClmnPic> i = ids.iterator();i.hasNext();){
 			buffer.append(i.next().getName());
 			buffer.append(",");
+			i.remove();
 		}
 		return buffer.replace(buffer.length()-1, buffer.length(), ")\r\n");
 	}
