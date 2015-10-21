@@ -58,6 +58,12 @@ public abstract class SQLResolver {
 	
 	public abstract Result forUpdate(Object obj,SQLCondition...conditions);
 	
+	public abstract Result forSelect(Class<?> clzz,SQLCondition...conditions);
+	
+	public abstract Result forDelete(Class<?> clzz,SQLCondition...conditions);
+	
+	public abstract Result forInsert(Object obj);
+	
 	
 	@SuppressWarnings("rawtypes")
 	public StringBuffer primaryKey(TblPic tblPic){

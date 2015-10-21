@@ -88,4 +88,22 @@ public class MySqlResolver extends SQLResolver {
 		}
 	}
 
+	@Override
+	public Result forSelect(Class<?> clzz, SQLCondition... conditions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result forDelete(Class<?> clzz, SQLCondition... conditions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result forInsert(Object obj) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
