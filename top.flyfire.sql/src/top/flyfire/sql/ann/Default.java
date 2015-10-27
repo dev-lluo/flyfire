@@ -10,6 +10,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Documented
 public @interface Default {
-	String value() default "";
-	Class<?> type() default String.class;
+	String value();
 }
