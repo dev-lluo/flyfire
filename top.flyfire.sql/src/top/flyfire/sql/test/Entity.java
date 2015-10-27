@@ -9,6 +9,6 @@ import top.flyfire.sql.ann.Type;
 import top.flyfire.sql.ann.Unique;
 
 @Table(name="table_1")
-public interface Entity {
+public @interface Entity {
 
 }
