@@ -1,31 +1,55 @@
 package top.flyfire.base;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URL;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
-import javassist.CtPrimitiveType;
 import javassist.Modifier;
+import javassist.NotFoundException;
+import top.flyfire.base.ffclass.FPackage;
 
 public class ClassUtil {
+	
+	private static String path = FFContext.PATH;
+	
 	private static ClassPool pool = ClassPool.getDefault();
 	
-	public CtClass create(String name){
+	
+	public static String getPath(){
+		return ClassUtil.path;
+	}
+	
+	public static CtClass get(String name){
+		try {
+			return pool.get(name);
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static CtClass create(String name){
 		return ClassUtil.pool.makeClass(name);
 	}
 	
-	public void addPublicMethod(CtClass clzz,String src){
+	public static void addMethod(CtClass clzz,String src){
 		try {
 			CtMethod method = CtNewMethod.make(src, clzz);
+			clzz.addMethod(method);
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public void addField(CtClass clzz,CtClass type,String name){
+	public static void addField(CtClass clzz,CtClass type,String name){
 		CtField field;
 		try {
 			field = new CtField(type, name, clzz);
@@ -42,16 +66,39 @@ public class ClassUtil {
 		}
 	}
 	
-	public void flush(CtClass clzz){
+	public static Class<?> flush(CtClass clzz){
 		try {
-			clzz.toClass();
+			
+			return clzz.toClass();
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public void flush(CtClass clzz,boolean writeFile){
+	public static Class<?> flush(CtClass clzz,boolean writeFile){
+		if(writeFile){
+			try {
+				clzz.writeFile(ClassUtil.path);
+				return clzz.toClass();
+			} catch (CannotCompileException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			}
+		}else{
+			return ClassUtil.flush(clzz);
+		}
+	}
+	
+	public static void main(String[] args) throws IOException  {
+		FPackage fPackage = new FPackage("top.flyfire");
+		fPackage.fclass("Class$A")
+		.field(ClassUtil.get("java.lang.String"), "name")
+		.method("public void show(){System.out.println(this.name);}");
 		
+		fPackage.toJar("entity");
 	}
 }

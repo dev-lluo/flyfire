@@ -43,7 +43,7 @@ public final class PackageUtil {
      */  
     public static List<String> getClassName(String packageName, boolean childPackage) {  
         List<String> fileNames = null;  
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();  
+        ClassLoader loader = FFContext.LOADER;  
         String packagePath = packageName.replace(".", "/");  
         idtt = packagePath.replace("/", "\\");
         URL url = loader.getResource(packagePath);  
