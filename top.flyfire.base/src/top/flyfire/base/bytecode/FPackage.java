@@ -1,4 +1,4 @@
-package top.flyfire.base.ffclass;
+package top.flyfire.base.bytecode;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,6 +16,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import top.flyfire.base.ClassUtil;
 import top.flyfire.base.FFContext;
 import top.flyfire.base.StreamUtil;
 import top.flyfire.base.StreamUtil.Task;
@@ -24,13 +25,10 @@ public class FPackage {
 	
 	private String name;
 	
-	private String basePath;
-	
 	private Map<String,FClass> chClass;
 	
 	public FPackage(String name){
 		this.name = name;
-		this.basePath = FFContext.PATH;
 		this.chClass = new HashMap<String,FClass>();
 	}
 	
@@ -42,7 +40,7 @@ public class FPackage {
 	}
 	
 	public void toJar(String jarName){
-		File file = new File(FFContext.PATH+"target");
+		File file = new File(ClassUtil.PATH);
 		if(!file.exists()||file.isFile()){
 			file.mkdirs();
 		}
@@ -50,12 +48,12 @@ public class FPackage {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION	, "1.0");
 		try {
-			JarOutputStream target = new JarOutputStream(new FileOutputStream(FFContext.PATH+"target"+File.separator+jarName+".jar"),manifest);
+			JarOutputStream target = new JarOutputStream(new FileOutputStream(ClassUtil.PATH+jarName+".jar"),manifest);	
 			for(Iterator<Entry<String,FClass>> i = set.iterator();i.hasNext();){
 				Entry<String,FClass> entry = i.next();
 				entry.getValue().flush(true);
 				String name = entry.getKey();
-				File source = new File(this.basePath+name);
+				File source = new File(ClassUtil.PATH+name);
 				this.writeClass(name, source, target);
 				i.remove();
 			}
