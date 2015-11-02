@@ -17,7 +17,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import top.flyfire.base.ClassUtil;
-import top.flyfire.base.FFContext;
 import top.flyfire.base.StreamUtil;
 import top.flyfire.base.StreamUtil.Task;
 
@@ -41,22 +40,17 @@ public class FPackage {
 	
 	public void toJar(String jarName){
 		File file = new File(ClassUtil.PATH);
-		if(!file.exists()||file.isFile()){
-			file.mkdirs();
-		}
 		Set<Entry<String,FClass>> set = chClass.entrySet();
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION	, "1.0");
 		try {
-			JarOutputStream target = new JarOutputStream(new FileOutputStream(ClassUtil.PATH+jarName+".jar"),manifest);	
+			JarOutputStream target = new JarOutputStream(new FileOutputStream(ClassUtil.JARPATH+jarName+".jar"),manifest);	
 			for(Iterator<Entry<String,FClass>> i = set.iterator();i.hasNext();){
 				Entry<String,FClass> entry = i.next();
 				entry.getValue().flush(true);
-				String name = entry.getKey();
-				File source = new File(ClassUtil.PATH+name);
-				this.writeClass(name, source, target);
 				i.remove();
 			}
+			toNextDeep(file, target);
 			target.flush();
 			target.close();
 		} catch (FileNotFoundException e) {
@@ -69,11 +63,24 @@ public class FPackage {
 		
 	}
 	
-	private void writeClass(String entryName,File source ,final JarOutputStream target) throws IOException{
-		if(source.exists()){
-			JarEntry entry = new JarEntry(entryName);
-			entry.setTime(source.lastModified());
-			target.putNextEntry(entry);
+	private void toNextDeep(File source, JarOutputStream target) throws IOException{
+		File[] chF = source.listFiles();
+		for(int i =  0;i<chF.length;i++){
+			writeClass(chF[i], target);
+		}
+	}
+	
+	private void writeClass(File source ,final JarOutputStream target) throws IOException{
+		String url = source.toURI().toURL().toString();
+		url = url.substring(url.indexOf(ClassUtil.PATH));
+		String name = url.substring(ClassUtil.PATH.length());
+		JarEntry entry = new JarEntry(name);
+		entry.setTime(source.lastModified());
+		target.putNextEntry(entry);
+		if(source.isDirectory()){
+			target.closeEntry();
+			toNextDeep(source, target);
+		}else{
 			BufferedInputStream  in = new BufferedInputStream(new FileInputStream(source));
 			StreamUtil.run(in, new Task() {
 				

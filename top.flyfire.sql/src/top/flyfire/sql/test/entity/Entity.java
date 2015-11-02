@@ -19,18 +19,18 @@ public @interface Entity {
 	@Id
 	@Type(SQLType.MYSQL_VARCHAR)
 	@Length(32)
-	String eId() default "e_id";
+	String eId();
 	
 	@Unique
 	@Type(SQLType.MYSQL_VARCHAR)
 	@Length(10)
-	String eCode() default "e_code";
+	String eCode();
 	
 	@Type(SQLType.MYSQL_VARCHAR)
 	@NotNull
-	String eName() default "e_name";
+	String eName();
 	
 	@Type(SQLType.MYSQL_DATETIME)
 	@Default("NOW")
-	String eTimestamp() default "e_timestamp";
+	String eTimestamp();
 }

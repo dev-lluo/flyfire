@@ -1,8 +1,9 @@
 package top.flyfire.base.bytecode;
 
-import java.util.Map;
+
+import top.flyfire.base.kval.StringKVal;
 
 public interface FBehavior <R>{
 	R flush();
-	R annotation(String annotationPath,Map<String,Object> memberValue);
+	R annotation(String annotationPath,StringKVal...memberValues);
 }

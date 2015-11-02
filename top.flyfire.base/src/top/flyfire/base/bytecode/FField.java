@@ -8,6 +8,7 @@ import javassist.CtField;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.FieldInfo;
 import top.flyfire.base.ClassUtil;
+import top.flyfire.base.kval.StringKVal;
 
 public class FField implements FBehavior<FField> {
 	
@@ -86,12 +87,12 @@ public class FField implements FBehavior<FField> {
 	}
 
 	@Override
-	public FField annotation(String annotationPath, Map<String, Object> memberValue) {
+	public FField annotation(String annotationPath,StringKVal...memberValues) {
 		// TODO Auto-generated method stub
 		if(!this.flushed){
 			this.flush();
 		}
-		this.fieldInfo.addAttribute(ClassUtil.buildAnnotation(this.cp, annotationPath, memberValue));
+		this.fieldInfo.addAttribute(ClassUtil.buildAnnotation(this.cp, annotationPath, memberValues));
 		return this;
 	}
 	

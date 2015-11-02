@@ -17,22 +17,38 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
+import javassist.bytecode.Descriptor;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ByteMemberValue;
 import javassist.bytecode.annotation.CharMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.DoubleMemberValue;
+import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.FloatMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.LongMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.ShortMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+import top.flyfire.base.kval.StringKVal;
 
 public class ClassUtil {
 
-	public final static String PATH = FFContext.PATH+"class.path"+File.separator;
+	public final static String PATH = FFContext.PATH+"class.path"+FFContext.URL_SEPARATOR;
+	
+	public final static String JARPATH = FFContext.PATH+"jar.path"+FFContext.URL_SEPARATOR;
+	
+	static{
+		File file = new File(ClassUtil.PATH);
+		if(!file.exists()||file.isFile()){
+			file.mkdirs();
+		}
+		File file2 = new File(ClassUtil.JARPATH);
+		if(!file2.exists()||file2.isFile()){
+			file2.mkdirs();
+		}
+	}
 
 	private static ClassPool pool = ClassPool.getDefault();
 
@@ -52,15 +68,13 @@ public class ClassUtil {
 	}
 
 	public static AnnotationsAttribute buildAnnotation(ConstPool cp, String annotationPath,
-			Map<String, Object> memberValue) {
+			StringKVal...memberValues) {
 		AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
 		try {
 			Annotation annotation = new Annotation(cp, ClassUtil.get(annotationPath));
-			Set<Entry<String, Object>> set = memberValue.entrySet();
-			for (Iterator<Entry<String, Object>> i = set.iterator(); i.hasNext();) {
-				Entry<String, Object> entry = i.next();
-				annotation.addMemberValue(entry.getKey(), ClassUtil.createMemberValue(cp, entry.getValue()));
-				i.remove();
+			for (int i = 0; i<memberValues.length;i++) {
+				StringKVal entry = memberValues[i];
+				annotation.addMemberValue(entry.key(), ClassUtil.createMemberValue(cp, entry.val()));
 			}
 			attr.addAnnotation(annotation);
 			return attr;
@@ -70,6 +84,7 @@ public class ClassUtil {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static MemberValue createMemberValue(ConstPool cp, Object val) {
 		if (val instanceof Integer) {
 			return new IntegerMemberValue(cp, (int) val);
@@ -89,6 +104,8 @@ public class ClassUtil {
 			return new BooleanMemberValue((boolean) val, cp);
 		} else if (val instanceof Class) {
 			return new ClassMemberValue(((Class) val).getName(), cp);
+		} else if(val instanceof Enum){
+			return new EnumMemberValue(cp.addUtf8Info(Descriptor.of(val.getClass().getName())), cp.addUtf8Info(((Enum) val).name()), cp);
 		} else {
 			return new StringMemberValue(val.toString(), cp);
 		}

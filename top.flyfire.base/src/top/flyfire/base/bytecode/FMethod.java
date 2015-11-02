@@ -8,6 +8,7 @@ import javassist.CtMethod;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import top.flyfire.base.ClassUtil;
+import top.flyfire.base.kval.StringKVal;
 
 public class FMethod implements FBehavior<FMethod> {
 	
@@ -82,12 +83,12 @@ public class FMethod implements FBehavior<FMethod> {
 	}
 
 	@Override
-	public FMethod annotation(String annotationPath, Map<String, Object> memberValue) {
+	public FMethod annotation(String annotationPath,StringKVal...memberValues) {
 		// TODO Auto-generated method stub
 		if(!this.flushed){
 			this.flush();
 		}
-		this.methodInfo.addAttribute(ClassUtil.buildAnnotation(this.cp, annotationPath, memberValue));
+		this.methodInfo.addAttribute(ClassUtil.buildAnnotation(this.cp, annotationPath, memberValues));
 		return this;
 	}
 	
