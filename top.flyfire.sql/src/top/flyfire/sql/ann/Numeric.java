@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Name {
-	String value() ;
+public @interface Numeric {
+	int precision() default 9;
+	int scale() default 0;
 }

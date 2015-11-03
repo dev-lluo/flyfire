@@ -2,16 +2,14 @@ package top.flyfire.base;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
@@ -59,6 +57,10 @@ public class ClassUtil {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static CtClass get(Class<?> clzz) {
+		return ClassUtil.get(clzz.getName());
 	}
 
 	public static CtClass create(String name) {
@@ -111,6 +113,27 @@ public class ClassUtil {
 		}
 	}
 
+	
+	public static void addConstructor(CtClass clzz,String src){
+		try {
+			CtConstructor ctConstructor = CtNewConstructor.make(src, clzz);
+			clzz.addConstructor(ctConstructor);
+		} catch (CannotCompileException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void addFiled(CtClass clzz,String src){
+		try {
+			CtField field = CtField.make(src, clzz);
+			clzz.addField(field);
+		} catch (CannotCompileException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static void addMethod(CtClass clzz, String src) {
 		try {
 			CtMethod method = CtNewMethod.make(src, clzz);

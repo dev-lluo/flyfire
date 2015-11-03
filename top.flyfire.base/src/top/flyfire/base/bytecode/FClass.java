@@ -38,6 +38,14 @@ public class FClass implements FBehavior<FClass> {
 		return new FField(this, this.clCtClass, type, name);
 	}
 	
+	public void insertField(String src){
+		ClassUtil.addFiled(this.clCtClass, src);
+	}
+	
+	public void insertConstructor(String src){
+		ClassUtil.addConstructor(this.clCtClass, src);
+	}
+	
 	@Override
 	public FClass flush(){
 		ClassUtil.flush(this.clCtClass);

@@ -1,13 +1,12 @@
 package top.flyfire.sql.test.entity;
 
-import top.flyfire.base.ClassUtil;
-import top.flyfire.base.bytecode.FPackage;
-import top.flyfire.base.kval.StringKVal;
-import top.flyfire.sql.ann.IdType;
+
+import top.flyfire.sql.resolver.AETResolver;
 
 public class Main {
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Class.forName("top.flyfire.sql.test.entity.Entity").newInstance();
+//		AETResolver.resolve("top.flyfire.sql.test.entity", "top.flyfire.sql.test.entity");
+		
 //		FPackage pckg = new FPackage("top.flyfire.test.entity");
 //		pckg.fclass("EntityTest1").annotation("top.flyfire.sql.test.entity.Entity")
 //		.field(ClassUtil.get("java.lang.String"), "id")
@@ -18,5 +17,8 @@ public class Main {
 //				.annotation("top.flyfire.sql.ann.NotNull")
 //				.annotation("top.flyfire.sql.ann.Length").$();
 //		pckg.toJar("entity");
+		
+		TestEntity testEntity = new TestEntity();
+		System.out.println(testEntity.getETimestamp());
 	}
 }

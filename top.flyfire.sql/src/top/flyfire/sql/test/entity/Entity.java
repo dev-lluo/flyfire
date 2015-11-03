@@ -5,6 +5,7 @@ import top.flyfire.sql.ann.Table;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import top.flyfire.base.FFContext;
 import top.flyfire.sql.ann.Default;
 import top.flyfire.sql.ann.Id;
 import top.flyfire.sql.ann.Length;
@@ -19,18 +20,19 @@ public @interface Entity {
 	@Id
 	@Type(SQLType.MYSQL_VARCHAR)
 	@Length(32)
-	String eId();
+	String eId() default "e_id";
 	
 	@Unique
 	@Type(SQLType.MYSQL_VARCHAR)
 	@Length(10)
-	String eCode();
+	String eCode() default "e_code";
 	
 	@Type(SQLType.MYSQL_VARCHAR)
 	@NotNull
-	String eName();
+	@Length(20)
+	String eName() default "e_name";
 	
 	@Type(SQLType.MYSQL_DATETIME)
-	@Default("NOW")
-	String eTimestamp();
+	@Default("new java.sql.Timestamp(System.currentTimeMillis())")
+	String eTimestamp() default "e_timestamp";
 }

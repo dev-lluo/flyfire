@@ -1,6 +1,5 @@
 package top.flyfire.base.bytecode;
 
-import java.util.Map;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;
