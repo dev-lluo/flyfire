@@ -1,11 +1,11 @@
 package top.flyfire.base.bytecode;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ClassName DeployJar
@@ -17,86 +17,49 @@ import java.util.jar.JarFile;
 
 public class HotDeploy {
 	// 后缀
-	private final static String CLAZZ_SUFFIX = ".class";
+	private final static String CLASS_SUFFIX = ".class";
 	
 	private final static String JAR_SUFFIX = ".jar";
 
 	// 类加载器
 	private ClassLoader classLoader;
 
-	/**
-	 * @Title loadPath
-	 * @Description 创建加载器
-	 * @Author weizhi2018
-	 * @param jarPath
-	 *            jar包所在路经
-	 * @throws
-	 */
+
 	public void loadPath(String jarPath) {
 		try {
 			File jarFiles = new File(jarPath);
-
-			File[] jarFilesArr = jarFiles.listFiles();
-			URL[] jarFilePathArr = new URL[jarFilesArr.length];
-			int i = 0;
-			for (File jarfile : jarFilesArr) {
-				String jarname = jarfile.getName();
-				if (jarname.endsWith(JAR_SUFFIX)) {
-					jarFilePathArr[i] = jarfile.toURI().toURL();
-					i++;
-				}
-				
+			if(jarFiles.exists()){
+				List<URL> urlList = new ArrayList<URL>();
+				this.loadPath(jarFiles, urlList);
+				URL[] jarFilePathArr = new URL[urlList.size()];
+				urlList.toArray(jarFilePathArr);
+				classLoader = new URLClassLoader(jarFilePathArr);
+				Thread.currentThread().setContextClassLoader(classLoader);
+				System.out.println(classLoader);
+				System.out.println(classLoader.getParent());
+				System.out.println(Thread.currentThread().getContextClassLoader());
+				System.out.println(Thread.currentThread().getContextClassLoader().getParent());
 			}
-			classLoader = new URLClassLoader(jarFilePathArr,Thread.currentThread().getContextClassLoader());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	/**
-	 * @Title loadJar
-	 * @Description 遍历jar包下的类
-	 * @Author weizhi2018
-	 * @param jarName
-	 *            jar包名字 完整路径
-	 * @throws
-	 */
-	public void loadJar(String jarName) {
-		if (jarName.indexOf(".jar") < 0) {
-			return;
-		}
-		try {
-			JarFile jarFile = new JarFile(jarName);
-			Enumeration<JarEntry> em = jarFile.entries();
-			while (em.hasMoreElements()) {
-				JarEntry jarEntry = em.nextElement();
-				String clazzFile = jarEntry.getName();
-
-				if (!clazzFile.endsWith(CLAZZ_SUFFIX)) {
-					continue;
-				}
-				String clazzName = clazzFile.substring(0,
-						clazzFile.length() - CLAZZ_SUFFIX.length()).replace(
-						'/', '.');
-				System.out.println(clazzName);
-
-				// loadClass(clazzName);
+	
+	private void loadPath(File jarPath,List<URL> urlList) throws MalformedURLException{
+		URL url = jarPath.toURI().toURL();
+		String jarName = jarPath.getName();
+		if(jarPath.isFile()&&(jarName.endsWith(JAR_SUFFIX)||jarName.endsWith(CLASS_SUFFIX))){
+			urlList.add(url);
+		}else if(jarPath.isDirectory()){
+			File[] chF = jarPath.listFiles();
+			for(int i = 0 ;i<chF.length;i++){
+				this.loadPath(chF[i],urlList);
 			}
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
 	}
 
-	/**
-	 * @Title loadClass
-	 * @Description 通过类加载器实例化
-	 * @Author weizhi2018
-	 * @param clazzName
-	 *            类名字
-	 * @return
-	 * @throws
-	 */
+
+
 	@SuppressWarnings("unchecked")
 	public <T> T newInstance(String clazzName) {
 		if (this.classLoader == null) {
@@ -114,6 +77,19 @@ public class HotDeploy {
 		} catch (InstantiationException e) {
 			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public <T> Class<T> loadClass(String clazzName){
+		if (this.classLoader == null) {
+			return null;
+		}
+		Class<?> clazz = null;
+		try {
+			return (Class<T>) classLoader.loadClass(clazzName);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}
