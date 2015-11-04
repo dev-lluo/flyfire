@@ -37,6 +37,9 @@ public class ClassUtil {
 	
 	public final static String JARPATH = FFContext.PATH+"jar.path"+FFContext.URL_SEPARATOR;
 	
+
+	public final static String THINF =  "$thing-in-itself$";
+	
 	static{
 		File file = new File(ClassUtil.PATH);
 		if(!file.exists()||file.isFile()){
@@ -145,7 +148,7 @@ public class ClassUtil {
 	}
 
 	public static CtMethod buildMethod(CtClass clzz, CtClass retType, String name, CtClass[] params, String content,
-			boolean isPrivate, boolean isStatic) {
+			boolean isPrivate, boolean isStatic ,boolean isFinal) {
 
 		CtMethod method = new CtMethod(retType, name, params, clzz);
 		try {
@@ -154,14 +157,17 @@ public class ClassUtil {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+		int mf = Modifier.PUBLIC;
 		if (isPrivate) {
-			method.setModifiers(Modifier.PRIVATE);
-		} else {
-			method.setModifiers(Modifier.PUBLIC);
-		}
+			mf = Modifier.PRIVATE;
+		} 
 		if (isStatic) {
-			method.setModifiers(Modifier.STATIC);
+			mf += Modifier.STATIC;
 		}
+		if (isFinal){
+			mf += Modifier.FINAL;
+		}
+		method.setModifiers(mf);
 		return method;
 	}
 	
@@ -196,18 +202,21 @@ public class ClassUtil {
 		}
 	}
 
-	public static CtField buildField(CtClass clzz, CtClass type, String name, boolean isPublic, boolean isStatic) {
+	public static CtField buildField(CtClass clzz, CtClass type, String name, boolean isPublic, boolean isStatic,boolean isFinal) {
 		CtField field;
 		try {
 			field = new CtField(type, name, clzz);
+			int mf = Modifier.PRIVATE;
 			if (isPublic) {
-				field.setModifiers(Modifier.PUBLIC);
-			} else {
-				field.setModifiers(Modifier.PRIVATE);
-			}
+				mf = Modifier.PUBLIC;
+			} 
 			if (isStatic) {
-				field.setModifiers(Modifier.STATIC);
+				mf += Modifier.STATIC;
 			}
+			if (isFinal){
+				mf += Modifier.FINAL;
+			}
+			field.setModifiers(mf);
 			return field;
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
@@ -231,6 +240,24 @@ public class ClassUtil {
 		try {
 			CtMethod getter = CtNewMethod.getter("get" + name, field);
 			clzz.addMethod(getter);
+		} catch (CannotCompileException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void logicalMethod(CtClass clzz,String name,String src){
+		try {
+			CtMethod method = clzz.getDeclaredMethod(name);
+			CtMethod newMethod = CtNewMethod.copy(method, clzz, null);
+			String rpName = name+"$UnLogical";
+			method.setName(rpName);
+			src = src.replace(THINF, rpName+"($$);");
+			newMethod.setBody(src);
+			clzz.addMethod(newMethod);
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
 		} catch (CannotCompileException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);

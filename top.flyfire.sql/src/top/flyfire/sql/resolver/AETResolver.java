@@ -2,6 +2,7 @@ package top.flyfire.sql.resolver;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +60,7 @@ public class AETResolver {
 
 	private static String buildNumeric(Numeric numeric, Method method) {
 		if (ObjectUtil.notNull(numeric)) {
-			return "(" + numeric.precision() + "," + numeric.scale() + ") ";
+			return "(" + numeric.precision() + (numeric.scale()>0?"," + numeric.scale():"") + ") ";
 		} else {
 			return "";
 		}
@@ -160,6 +161,70 @@ public class AETResolver {
 							idSet.add(sqlName);
 
 						fClass.field(ClassUtil.get(type.value().getType()), baseName).$();
+						if(String.class.isAssignableFrom(type.value().getType())){
+							StringBuilder logicalCode = new StringBuilder();
+							logicalCode.append("{");
+							logicalCode.append(ClassUtil.THINF);
+							logicalCode.append("if(this.");
+							logicalCode.append(baseName);
+							logicalCode.append("!=null&&this.");
+							logicalCode.append(baseName);
+							logicalCode.append(".length()>");
+							logicalCode.append(length.value());
+							logicalCode.append(")");
+							logicalCode.append("throw new java.lang.RuntimeException(\"[\"+this."+baseName+"+\"]length>"+length.value()+"\");}");
+							fClass.logicalMethod("set"+StringUtil.upperFirst(baseName), logicalCode.toString());
+						}else if(BigDecimal.class.isAssignableFrom(type.value().getType())){
+							StringBuilder logicalCode = new StringBuilder();
+							logicalCode.append("{");
+							logicalCode.append(ClassUtil.THINF);
+							logicalCode.append("if(this.");
+							logicalCode.append(baseName);
+							logicalCode.append("!=null)");
+							logicalCode.append("this.");
+							logicalCode.append(baseName);
+							logicalCode.append("=");
+							logicalCode.append("this.");
+							logicalCode.append(baseName);
+							logicalCode.append(".setScale("+numeric.scale()+",java.math.BigDecimal.ROUND_FLOOR);");
+							
+							logicalCode.append("if(this.");
+							logicalCode.append(baseName);
+							logicalCode.append("!=null&&this.");
+							logicalCode.append(baseName);
+							logicalCode.append(".precision()");
+							logicalCode.append(">");
+							logicalCode.append(numeric.precision());
+							logicalCode.append(")");
+							logicalCode.append("throw new java.lang.RuntimeException(\"[\"+this."+baseName+"+\"]numeric("+numeric.precision()+","+numeric.scale()+")\");}");
+							fClass.logicalMethod("set"+StringUtil.upperFirst(baseName), logicalCode.toString());
+						}else if(Number.class.isAssignableFrom(type.value().getType())){
+							StringBuilder logicalCode = new StringBuilder();
+							logicalCode.append("{");
+							logicalCode.append(ClassUtil.THINF);
+							logicalCode.append("if(this.");
+							logicalCode.append(baseName);
+							logicalCode.append("!=null&&new java.math.BigDecimal(this.");
+							logicalCode.append(baseName);
+							logicalCode.append(".toString()).setScale("+numeric.scale()+",java.math.BigDecimal.ROUND_FLOOR).precision()");
+							logicalCode.append(">");
+							logicalCode.append(numeric.precision());
+							logicalCode.append(")");
+							logicalCode.append("throw new java.lang.RuntimeException(\"[\"+this."+baseName+"+\"]numeric("+numeric.precision()+","+numeric.scale()+")\");");
+							
+							logicalCode.append("if(this.");
+							logicalCode.append(baseName);
+							logicalCode.append("!=null&&new java.math.BigDecimal(this.");
+							logicalCode.append(baseName);
+							logicalCode.append(".toString()).scale()");
+							logicalCode.append(">");
+							logicalCode.append(numeric.scale());
+							logicalCode.append(")");
+							logicalCode.append("throw new java.lang.RuntimeException(\"[\"+this."+baseName+"+\"]numeric("+numeric.precision()+","+numeric.scale()+")\");}");
+							
+							fClass.logicalMethod("set"+StringUtil.upperFirst(baseName), logicalCode.toString());
+							
+						}
 
 						sqlBuilder.append((builder));
 						sqlBuilder.append(',');
@@ -169,7 +234,6 @@ public class AETResolver {
 				sqlBuilder.append(buildId(idSet, clzz));
 				sqlBuilder.append(')');
 				constructorBuilder.append("}");
-				System.out.println(constructorBuilder);
 				fClass.insertConstructor(constructorBuilder.toString());
 				fClass.annotation(clzz.getName(),mv);
 				fClass.insertField("public static final " + clzz.getName() + " TABLE = " + targetPckg + "."

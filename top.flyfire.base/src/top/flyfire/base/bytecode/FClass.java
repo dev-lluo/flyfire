@@ -9,6 +9,8 @@ import top.flyfire.base.ClassUtil;
 import top.flyfire.base.kval.StringKVal;
 
 public class FClass implements FBehavior<FClass> {
+	
+	
 	private final CtClass clCtClass;
 	private final ClassFile classFile;
 	private final ConstPool constPool;
@@ -44,6 +46,14 @@ public class FClass implements FBehavior<FClass> {
 	
 	public void insertConstructor(String src){
 		ClassUtil.addConstructor(this.clCtClass, src);
+	}
+	
+	public void insertMethod(String src){
+		ClassUtil.addMethod(this.clCtClass, src);
+	}
+	
+	public void logicalMethod(String name,String src){
+		ClassUtil.logicalMethod(this.clCtClass, name, src);
 	}
 	
 	@Override

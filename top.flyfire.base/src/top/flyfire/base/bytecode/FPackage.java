@@ -38,13 +38,14 @@ public class FPackage {
 		return fc;
 	}
 	
-	public void toJar(String jarName){
+	public String toJar(String jarName){
 		File file = new File(ClassUtil.PATH);
 		Set<Entry<String,FClass>> set = chClass.entrySet();
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION	, "1.0");
+		String jarPath = ClassUtil.JARPATH+jarName+".jar";
 		try {
-			JarOutputStream target = new JarOutputStream(new FileOutputStream(ClassUtil.JARPATH+jarName+".jar"),manifest);	
+			JarOutputStream target = new JarOutputStream(new FileOutputStream(jarPath),manifest);	
 			for(Iterator<Entry<String,FClass>> i = set.iterator();i.hasNext();){
 				Entry<String,FClass> entry = i.next();
 				entry.getValue().flush(true);
@@ -60,7 +61,16 @@ public class FPackage {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+		return jarPath;
 		
+	}
+	
+	public void toJarWidthHotLoad(String jarName){
+		String jarPath = this.toJar(jarName);
+		File file = new File(jarPath);
+		if(file.exists()){
+			System.out.println("[hot-load@"+System.currentTimeMillis()+"]-->"+jarPath);
+		}
 	}
 	
 	private void toNextDeep(File source, JarOutputStream target) throws IOException{

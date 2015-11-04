@@ -14,6 +14,8 @@ public class FField implements FBehavior<FField> {
 	
 	private boolean isStatic = false;
 	
+	private boolean isFinal = false;
+	
 	private boolean withGetter = true;
 	
 	private boolean withSetter = true;
@@ -44,6 +46,11 @@ public class FField implements FBehavior<FField> {
 		return this;
 	}
 	
+	public FField isFinal(boolean isFinal){
+		this.isFinal = isFinal;
+		return this;
+	}
+	
 	public FField withGetter(boolean withGetter){
 		this.withGetter = withGetter;
 		return this;
@@ -65,7 +72,7 @@ public class FField implements FBehavior<FField> {
 	@Override
 	public FField flush() {
 		// TODO Auto-generated method stub
-		this.field = ClassUtil.buildField(this.source, this.type, this.name ,this.isPublic,this.isStatic);
+		this.field = ClassUtil.buildField(this.source, this.type, this.name ,this.isPublic,this.isStatic,this.isFinal);
 		if(withGetter){
 			ClassUtil.addGetter(this.source, this.field, this.name);
 		}

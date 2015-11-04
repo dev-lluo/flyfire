@@ -17,6 +17,8 @@ public class FMethod implements FBehavior<FMethod> {
 	
 	private boolean flushed = false;
 	
+	private boolean isFinal = false;
+	
 	private CtMethod method;
 	
 	private MethodInfo methodInfo;
@@ -48,6 +50,12 @@ public class FMethod implements FBehavior<FMethod> {
 		return this;
 	}
 	
+	public FMethod isFinal(boolean isFinal){
+		this.isFinal = isFinal;
+		return this;
+	}
+	
+	
 	
 	public FMethod(FClass $,CtClass clzz,String name){
 		this.$ = $;
@@ -68,7 +76,7 @@ public class FMethod implements FBehavior<FMethod> {
 	public FMethod flush() {
 		// TODO Auto-generated method stub
 		this.content = new StringBuffer("{").append(this.content).append("}");
-		this.method = ClassUtil.buildMethod(this.source, this.retType, this.name, this.params, this.content.toString(), this.isPrivate, this.isStatic);
+		this.method = ClassUtil.buildMethod(this.source, this.retType, this.name, this.params, this.content.toString(), this.isPrivate, this.isStatic,this.isFinal);
 		try {
 			this.source.addMethod(method);
 		} catch (CannotCompileException e) {
