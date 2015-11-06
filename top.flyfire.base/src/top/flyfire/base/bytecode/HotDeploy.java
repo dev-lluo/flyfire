@@ -7,6 +7,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * @ClassName DeployJar
  * @Description ÈÈ¼ÓÔØJar°ü
@@ -33,12 +34,7 @@ public class HotDeploy {
 				this.loadPath(jarFiles, urlList);
 				URL[] jarFilePathArr = new URL[urlList.size()];
 				urlList.toArray(jarFilePathArr);
-				classLoader = new URLClassLoader(jarFilePathArr);
-				Thread.currentThread().setContextClassLoader(classLoader);
-				System.out.println(classLoader);
-				System.out.println(classLoader.getParent());
-				System.out.println(Thread.currentThread().getContextClassLoader());
-				System.out.println(Thread.currentThread().getContextClassLoader().getParent());
+				classLoader = new URLClassLoader(jarFilePathArr,Thread.currentThread().getContextClassLoader());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

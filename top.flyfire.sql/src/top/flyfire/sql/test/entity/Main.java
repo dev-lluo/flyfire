@@ -12,12 +12,14 @@ import top.flyfire.sql.resolver.AETResolver;
 
 public class Main {
 	public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		System.out.println(Thread.currentThread().getContextClassLoader());
+		//System.out.println(Main.class.getClassLoader());
+		//System.out.println(Thread.currentThread().getContextClassLoader());
 		HotDeploy dp = new HotDeploy();
 		dp.loadPath("C:\\Users\\h\\git\\flyfire\\ROOT\\WebContent\\WEB-INF\\lib");
-		System.out.println(Thread.currentThread().getContextClassLoader());
+		//System.out.println(Thread.currentThread().getContextClassLoader());
 		//System.out.println(dp.loadClass("org.apache.commons.fileupload.FileItem"));
-		Class.forName("org.apache.commons.fileupload.FileItem");
+		
+		
 		
 //		AETResolver.resolve("top.flyfire.sql.test.entity", "top.flyfire.sql.test.entity");
 		
